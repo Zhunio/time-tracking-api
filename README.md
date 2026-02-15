@@ -12,11 +12,10 @@ Backend API for managing users, authentication, and tracked work time.
 ## Development
 
 ```bash
-npm run start:dev
+npm run start
 npm run test
-npm run test:e2e
 npm run test:cov
-npm run format
+npm run prettier
 ```
 
 ## Production
