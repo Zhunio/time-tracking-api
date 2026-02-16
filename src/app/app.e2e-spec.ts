@@ -2,7 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { App } from 'supertest/types';
-import { AppModule } from './app.module';
+import { AppModule } from '../app.module';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
@@ -22,10 +22,14 @@ describe('AppController (e2e)', () => {
     }
   });
 
-  it('/ (GET)', () => {
+  it('/ (GET) requires authentication', () => {
+    return request(app.getHttpServer()).get('/').expect(401);
+  });
+
+  it('/auth/login (POST) is public', () => {
     return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+      .post('/auth/login')
+      .send({ email: 'missing@example.com', password: 'wrong' })
+      .expect(401);
   });
 });

@@ -3,11 +3,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaClient } from '@prisma/client';
 import request from 'supertest';
 import { App } from 'supertest/types';
-import { AppModule } from './app.module';
+import { AppModule } from '../app.module';
+import { getAccessToken, seedAdminUser } from '../auth/test-auth.helper';
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication<App>;
   let prisma: PrismaClient;
+  let accessToken: string;
 
   beforeAll(async () => {
     prisma = new PrismaClient();
@@ -21,8 +23,12 @@ describe('UsersController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
+
     await prisma.timeTracker.deleteMany();
     await prisma.user.deleteMany();
+
+    await seedAdminUser(prisma);
+    accessToken = await getAccessToken(app);
   });
 
   afterEach(async () => {
@@ -47,6 +53,7 @@ describe('UsersController (e2e)', () => {
 
     const response = await request(app.getHttpServer())
       .post('/users')
+      .set('Authorization', `Bearer ${accessToken}`)
       .send(payload)
       .expect(201);
 
@@ -70,8 +77,17 @@ describe('UsersController (e2e)', () => {
       dateOfBirth: '1990-01-01T00:00:00.000Z',
     };
 
-    await request(app.getHttpServer()).post('/users').send(payload).expect(201);
-    await request(app.getHttpServer()).post('/users').send(payload).expect(409);
+    await request(app.getHttpServer())
+      .post('/users')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send(payload)
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .post('/users')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send(payload)
+      .expect(409);
   });
 
   it('/users (GET) lists users', async () => {
@@ -85,22 +101,28 @@ describe('UsersController (e2e)', () => {
       },
     });
 
-    const response = await request(app.getHttpServer()).get('/users').expect(200);
+    const response = await request(app.getHttpServer())
+      .get('/users')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
 
-    expect(response.body).toHaveLength(1);
-    expect(response.body[0]).toEqual(
-      expect.objectContaining({
-        email: 'jane@example.com',
-        firstName: 'Jane',
-        lastName: 'Smith',
-        isAdmin: false,
-      }),
+    expect(response.body).toHaveLength(2);
+    expect(response.body).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          email: 'jane@example.com',
+          firstName: 'Jane',
+          lastName: 'Smith',
+          isAdmin: false,
+        }),
+      ]),
     );
   });
 
   it('/users/:id (GET) returns 404 when missing', async () => {
     await request(app.getHttpServer())
       .get('/users/non-existent-id')
+      .set('Authorization', `Bearer ${accessToken}`)
       .expect(404);
   });
 
@@ -117,6 +139,7 @@ describe('UsersController (e2e)', () => {
 
     const response = await request(app.getHttpServer())
       .patch(`/users/${createdUser.id}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .send({
         firstName: 'After',
         isAdmin: true,
@@ -145,11 +168,19 @@ describe('UsersController (e2e)', () => {
 
     await request(app.getHttpServer())
       .delete(`/users/${createdUser.id}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .expect(200)
       .expect({
         message: `User with id ${createdUser.id} deleted`,
       });
 
-    await request(app.getHttpServer()).get(`/users/${createdUser.id}`).expect(404);
+    await request(app.getHttpServer())
+      .get(`/users/${createdUser.id}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(404);
+  });
+
+  it('/users (GET) returns 401 without token', async () => {
+    await request(app.getHttpServer()).get('/users').expect(401);
   });
 });

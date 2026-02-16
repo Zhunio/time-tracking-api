@@ -24,6 +24,7 @@ npm install
 
 ```bash
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/time_tracking?schema=public"
+JWT_SECRET="replace-with-a-strong-secret"
 ```
 
 ### Setup Database
@@ -95,3 +96,9 @@ npx prisma migrate deploy
 # Start the app
 npm run start:prod
 ```
+
+## Auth API
+
+- `POST /auth/login` (public): returns JWT access token for a valid user.
+- `POST /auth/register` (admin-only): creates a new user.
+- All other endpoints require `Authorization: Bearer <token>`.
