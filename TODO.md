@@ -3,17 +3,15 @@
 Use this file to track features we plan, build, and ship together.
 
 ## Backlog
-- [ ] Add api for login/register
-  - [ ] Use JWT
-  - [ ] Add login endpoint
-  - [ ] Add register endpoint
-  - [ ] Add Auth guard for all endpoints except login
-  - [ ] Restrict register endpoint only to admin users
+
+- [ ] _None yet_
 
 ## In Progress
+
 - [ ] _None yet_
 
 ## Done
+
 - [x] Add prisma (ORM + migrator) with Postgres DB
 - [x] Add CRUD api for users
   - [x] User info
@@ -29,3 +27,9 @@ Use this file to track features we plan, build, and ship together.
     - [x] Date (MM/DD/YYYY)
     - [x] StartTime (HH:MM)
     - [x] EndTime (HH:MM)
+- [x] Add api for login/register
+  - [x] Use JWT
+  - [x] Add login endpoint
+  - [x] Add register endpoint
+  - [x] Add Auth guard for all endpoints except login
+  - [x] Restrict register endpoint only to admin users

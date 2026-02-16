@@ -3,11 +3,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaClient } from '@prisma/client';
 import request from 'supertest';
 import { App } from 'supertest/types';
-import { AppModule } from './app.module';
+import { AppModule } from '../app.module';
+import { getAccessToken, seedAdminUser } from '../auth/test-auth.helper';
 
 describe('TimeTrackersController (e2e)', () => {
   let app: INestApplication<App>;
   let prisma: PrismaClient;
+  let accessToken: string;
 
   beforeAll(async () => {
     prisma = new PrismaClient();
@@ -21,8 +23,12 @@ describe('TimeTrackersController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
+
     await prisma.timeTracker.deleteMany();
     await prisma.user.deleteMany();
+
+    await seedAdminUser(prisma);
+    accessToken = await getAccessToken(app);
   });
 
   afterEach(async () => {
@@ -55,6 +61,7 @@ describe('TimeTrackersController (e2e)', () => {
 
     const response = await request(app.getHttpServer())
       .post('/time-trackers')
+      .set('Authorization', `Bearer ${accessToken}`)
       .send(payload)
       .expect(201);
 
@@ -74,6 +81,7 @@ describe('TimeTrackersController (e2e)', () => {
   it('/time-trackers (POST) returns 404 for missing user', async () => {
     await request(app.getHttpServer())
       .post('/time-trackers')
+      .set('Authorization', `Bearer ${accessToken}`)
       .send({
         userId: 'missing-user-id',
         date: '2026-02-16T00:00:00.000Z',
@@ -105,6 +113,7 @@ describe('TimeTrackersController (e2e)', () => {
 
     const response = await request(app.getHttpServer())
       .get('/time-trackers')
+      .set('Authorization', `Bearer ${accessToken}`)
       .expect(200);
 
     expect(response.body).toHaveLength(1);
@@ -120,6 +129,7 @@ describe('TimeTrackersController (e2e)', () => {
   it('/time-trackers/:id (GET) returns 404 when missing', async () => {
     await request(app.getHttpServer())
       .get('/time-trackers/non-existent-id')
+      .set('Authorization', `Bearer ${accessToken}`)
       .expect(404);
   });
 
@@ -145,6 +155,7 @@ describe('TimeTrackersController (e2e)', () => {
 
     const response = await request(app.getHttpServer())
       .patch(`/time-trackers/${timeTracker.id}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .send({
         startTime: '10:00',
         endTime: '18:00',
@@ -182,11 +193,17 @@ describe('TimeTrackersController (e2e)', () => {
 
     await request(app.getHttpServer())
       .delete(`/time-trackers/${timeTracker.id}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .expect(200)
       .expect({ message: `Time tracker with id ${timeTracker.id} deleted` });
 
     await request(app.getHttpServer())
       .get(`/time-trackers/${timeTracker.id}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .expect(404);
+  });
+
+  it('/time-trackers (GET) returns 401 without token', async () => {
+    await request(app.getHttpServer()).get('/time-trackers').expect(401);
   });
 });
