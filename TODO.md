@@ -3,12 +3,6 @@
 Use this file to track features we plan, build, and ship together.
 
 ## Backlog
-- [ ] Add CRUD api for time tracking
-  - [ ] TimeTracker
-    - [ ] User
-    - [ ] Date (MM/DD/YYYY)
-    - [ ] StartTime (HH:MM)
-    - [ ] EndTime (HH:MM)
 - [ ] Add api for login/register
   - [ ] Use JWT
   - [ ] Add login endpoint
@@ -29,3 +23,9 @@ Use this file to track features we plan, build, and ship together.
     - [x] Last Name
     - [x] DOB
     - [x] IsAdmin
+- [x] Add CRUD api for time tracking
+  - [x] TimeTracker
+    - [x] User
+    - [x] Date (MM/DD/YYYY)
+    - [x] StartTime (HH:MM)
+    - [x] EndTime (HH:MM)
