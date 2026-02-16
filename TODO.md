@@ -3,7 +3,6 @@
 Use this file to track features we plan, build, and ship together.
 
 ## Backlog
-- [ ] Add prisma (ORM + migrator) with Postgres DB
 - [ ] Add CRUD api for users
   - [ ] User info
     - [ ] Email
@@ -29,5 +28,4 @@ Use this file to track features we plan, build, and ship together.
 - [ ] _None yet_
 
 ## Done
-- [ ] _None yet_
-
+- [x] Add prisma (ORM + migrator) with Postgres DB
