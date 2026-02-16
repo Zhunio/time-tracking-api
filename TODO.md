@@ -3,14 +3,6 @@
 Use this file to track features we plan, build, and ship together.
 
 ## Backlog
-- [ ] Add CRUD api for users
-  - [ ] User info
-    - [ ] Email
-    - [ ] Password
-    - [ ] First Name
-    - [ ] Last Name
-    - [ ] DOB
-    - [ ] IsAdmin
 - [ ] Add CRUD api for time tracking
   - [ ] TimeTracker
     - [ ] User
@@ -29,3 +21,11 @@ Use this file to track features we plan, build, and ship together.
 
 ## Done
 - [x] Add prisma (ORM + migrator) with Postgres DB
+- [x] Add CRUD api for users
+  - [x] User info
+    - [x] Email
+    - [x] Password
+    - [x] First Name
+    - [x] Last Name
+    - [x] DOB
+    - [x] IsAdmin
