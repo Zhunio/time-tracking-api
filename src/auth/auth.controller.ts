@@ -22,7 +22,7 @@ export class AuthController {
 
   @Public()
   @Post('login')
-  @ApiOperation({ summary: 'Authenticate user and return JWT token' })
+  @ApiOperation({ summary: 'Login and obtain a JWT token' })
   @ApiBody({ type: LoginDto })
   @ApiCreatedResponse({
     description: 'Login successful',
