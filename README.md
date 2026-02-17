@@ -12,6 +12,10 @@ Backend API for managing users, authentication, and tracked work time.
 - 🔑 **Authentication**
   - Login and register endpoints
 
+## API Reference
+
+API Reference: `{URL}/docs`
+
 ## Local Development
 
 ### Installation
@@ -96,9 +100,3 @@ npx prisma migrate deploy
 # Start the app
 npm run start:prod
 ```
-
-## Auth API
-
-- `POST /auth/login` (public): returns JWT access token for a valid user.
-- `POST /auth/register` (admin-only): creates a new user.
-- All other endpoints require `Authorization: Bearer <token>`.
