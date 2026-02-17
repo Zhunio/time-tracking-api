@@ -1,5 +1,4 @@
 import { NestFactory } from '@nestjs/core';
-import { apiReference } from '@scalar/nestjs-api-reference';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
@@ -13,6 +12,7 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
+  const { apiReference } = await import('@scalar/nestjs-api-reference');
   app.use(
     '/docs',
     apiReference({
