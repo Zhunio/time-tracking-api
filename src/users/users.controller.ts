@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -9,6 +18,7 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { MessageResponseDto } from '../common/dto/message-response.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -17,6 +27,7 @@ import { UsersService } from './users.service';
 
 @ApiTags('Users')
 @ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -31,7 +42,11 @@ export class UsersController {
 
   @Get()
   @ApiOperation({ summary: 'List users' })
-  @ApiOkResponse({ description: 'Users list', type: UserResponseDto, isArray: true })
+  @ApiOkResponse({
+    description: 'Users list',
+    type: UserResponseDto,
+    isArray: true,
+  })
   findAll() {
     return this.usersService.findAll();
   }
@@ -58,7 +73,10 @@ export class UsersController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete user by id' })
   @ApiParam({ name: 'id', description: 'User id' })
-  @ApiOkResponse({ description: 'Delete confirmation', type: MessageResponseDto })
+  @ApiOkResponse({
+    description: 'Delete confirmation',
+    type: MessageResponseDto,
+  })
   @ApiNotFoundResponse({ description: 'User not found' })
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);

@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -9,6 +18,7 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { MessageResponseDto } from '../common/dto/message-response.dto';
 import { CreateTimeTrackerDto } from './dto/create-time-tracker.dto';
 import { TimeTrackerResponseDto } from './dto/time-tracker-response.dto';
@@ -17,6 +27,7 @@ import { TimeTrackersService } from './time-trackers.service';
 
 @ApiTags('Time Trackers')
 @ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('time-trackers')
 export class TimeTrackersController {
   constructor(private readonly timeTrackersService: TimeTrackersService) {}
@@ -74,7 +85,10 @@ export class TimeTrackersController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete time tracker by id' })
   @ApiParam({ name: 'id', description: 'Time tracker id' })
-  @ApiOkResponse({ description: 'Delete confirmation', type: MessageResponseDto })
+  @ApiOkResponse({
+    description: 'Delete confirmation',
+    type: MessageResponseDto,
+  })
   @ApiNotFoundResponse({ description: 'Time tracker not found' })
   remove(@Param('id') id: string) {
     return this.timeTrackersService.remove(id);
