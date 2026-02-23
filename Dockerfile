@@ -13,6 +13,9 @@ RUN npm ci
 # Copy source code
 COPY . .
 
+# Generate Prisma client so TypeScript can resolve Prisma model/types during build
+RUN npx prisma generate
+
 # Build app
 RUN npm run build
 
