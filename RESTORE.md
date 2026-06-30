@@ -21,8 +21,7 @@
    ```
 
    ```bash
-   psql -U time_tracking -d time_tracking < /backups/latest-postgres_time_tracking_time-tracking-postgres.sql
-   ```
+   pg_restore -U time_tracking -d time_tracking /backups/pg-dump-postgres-1782781208.dmp
 
 5. 🚀 Start the application.
 
