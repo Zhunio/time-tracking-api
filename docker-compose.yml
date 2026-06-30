@@ -1,21 +1,64 @@
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: time-tracking-postgres
+  time-tracking-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
     restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://time_tracking:${POSTGRES_PASSWORD}@time-tracking-postgres:5432/time_tracking
+    depends_on:
+      time-tracking-postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', '-q', 'http://localhost:3000/health']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  time-tracking-postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: time_tracking
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: time_tracking
     ports:
       - '5432:5432'
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - time_tracking_postgres:/var/lib/postgresql/data
+      - /opt/time-tracking-api/backups:/backups:ro
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres -d time_tracking']
+      test: ['CMD-SHELL', 'pg_isready -U time_tracking -d time_tracking']
       interval: 5s
       timeout: 5s
       retries: 10
 
+  time-tracking-postgres-backup:
+    image: tiredofit/db-backup:4.1.100
+    restart: unless-stopped
+    depends_on:
+      time-tracking-postgres:
+        condition: service_healthy
+    environment:
+      - TZ=America/New_York
+
+      - DB01_TYPE=postgres
+      - DB01_HOST=time-tracking-postgres
+      - DB01_PORT=5432
+      - DB01_NAME=time_tracking
+      - DB01_USER=time_tracking
+      - DB01_PASS=${POSTGRES_PASSWORD}
+
+      - DEFAULT_BACKUP_BEGIN=0 1 * * *
+      - DEFAULT_FILESYSTEM_PATH=/backups
+      - DEFAULT_CLEANUP_TIME=10080
+
+      - CONTAINER_ENABLE_MONITORING=false
+    volumes:
+      - /opt/time-tracking-api/backups:/backups
+
 volumes:
-  postgres_data:
+  time_tracking_postgres:

@@ -1,102 +1,68 @@
-# Time Tracking API
+# ⏰ Time Tracking API
 
-Backend API for managing users, authentication, and tracked work time.
+Backend REST API for managing users, authentication, and tracked work time.
 
 ## ✨ Features
 
-- 👥 **User Management**
-  - User accounts with admin control
-  - User profiles with basic personal info
-- ⏰ **Time Tracking**
-  - Time logs for daily work hours
-- 🔑 **Authentication**
-  - Login and register endpoints
+- 🔑 JWT-based authentication.
+- 👥 User management.
+- ⏰ Time tracking.
+- 🗄️ PostgreSQL with Prisma ORM.
+- 🐳 Deploy with Docker Compose or Coolify.
+- ⚡ Built with Node.js 22 and NestJS.
 
-## API Reference
+## 🚀 Coolify
 
-API Reference: `{URL}/docs`
+Deploy this repository as a Docker Compose service.
 
-## Local Development
+- 🔐 Repository Type: `Private Repository (with GitHub App)`
+- 🐙 GitHub App: `zhunio-coolify`
+- 🌿 Branch: `main`
+- 🐳 Build Pack: `Docker Compose`
+- 🔌 Application Port: `3000`
+- 🗄️ Database: `PostgreSQL`
+- 🔑 Environment Variables:
+  - `POSTGRES_PASSWORD`
+  - `JWT_SECRET`
 
-### Installation
+See [DEPLOY.md](DEPLOY.md).
 
-```bash
-npm install
-```
+## ♻️ Restore
 
-### Environment Variables
+Restore consists of:
 
-```bash
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/time_tracking?schema=public"
-JWT_SECRET="replace-with-a-strong-secret"
-```
+1. 🛑 Stop the application.
+2. ☁️ Restore `/opt/time-tracking-api`.
+3. 🗄️ Start PostgreSQL.
+4. 📦 Restore the database.
+5. 🚀 Start the application.
 
-### Setup Database
+See [RESTORE.md](RESTORE.md).
 
-```bash
-# Start database
-docker compose up -d
-
-# Apply Migrations
-npx prisma migrate deploy
-
-# Create Migration
-npx prisma migrate dev --name {migration_name}
-
-# Stop database
-docker compose down -v
-```
-
-### Setup App
-
-```bash
-# Start app in dev mode
-npm run start
-
-# Start app in debug mode
-npm run start:debug
-
-# Start app in prod mode
-npm run start:prod
-
-# Build the app
-npm run build
-```
-
-### Test App
-
-```bash
-# Run e2e tests
-npm run test
-
-# Run e2e tests in watch mode
-npm run test:watch
-
-# e2e e2e tests in debug mode
-npm run test:debug
-
-# Run e2e coverage
-npm run test:cov
-```
-
-### Run Prettier
-
-```bash
-npm run prettier
-```
-
-## Deployment
+## 💻 Development
 
 ```bash
 # Install dependencies
 npm install
 
-# Build the app
-npm run build
+# Start PostgreSQL
+docker compose up -d time-tracking-postgres
 
-# Apply migrations
+# Apply database migrations
 npx prisma migrate deploy
 
-# Start the app
-npm run start:prod
+# Start the API
+npm run start
+```
+
+Other commands:
+
+```bash
+docker compose down
+docker compose down -v
+
+npm run build
+npm test
+npm run lint
+npm run format
 ```
